@@ -1,6 +1,6 @@
 from esphome import config_validation as cv
 from esphome import codegen as cg
-from esphome.const import CONF_BLUE, CONF_GREEN, CONF_ID, CONF_RED, CONF_WHITE
+from esphome.const import CONF_BLUE, CONF_GREEN, CONF_ID, CONF_RED, CONF_WHITE, CONF_ALFA
 
 ColorStruct = cg.esphome_ns.struct("Color")
 
@@ -10,7 +10,9 @@ CONF_RED_INT = "red_int"
 CONF_GREEN_INT = "green_int"
 CONF_BLUE_INT = "blue_int"
 CONF_WHITE_INT = "white_int"
+CONF_ALFA_INT = "alfa_int"
 CONF_HEX = "hex"
+
 
 
 def hex_color(value):
@@ -18,10 +20,10 @@ def hex_color(value):
         value = str(value)
     if not isinstance(value, str):
         raise cv.Invalid("Invalid value for hex color")
-    if len(value) != 6:
-        raise cv.Invalid("Hex color must have six digits")
+    if len(value) != 8:
+        raise cv.Invalid("Hex color must have eight digits")
     try:
-        return int(value[0:2], 16), int(value[2:4], 16), int(value[4:6], 16)
+        return int(value[0:2], 16), int(value[2:4], 16), int(value[4:6], 16), int(value[6:8], 16)
     except ValueError as exc:
         raise cv.Invalid("Color must be hexadecimal") from exc
 
@@ -35,6 +37,8 @@ components = {
     CONF_BLUE_INT,
     CONF_WHITE,
     CONF_WHITE_INT,
+	CONF_ALFA,
+	CONF_ALFA_INT,
 }
 
 
@@ -60,6 +64,8 @@ CONFIG_SCHEMA = cv.All(
             cv.Exclusive(CONF_BLUE_INT, "blue"): cv.uint8_t,
             cv.Exclusive(CONF_WHITE, "white"): cv.percentage,
             cv.Exclusive(CONF_WHITE_INT, "white"): cv.uint8_t,
+			cv.Exclusive(CONF_ALFA, "alfa"): cv.percentage,
+            cv.Exclusive(CONF_ALFA_INT, "alfa"): cv.uint8_t,
             cv.Optional(CONF_HEX): hex_color,
         }
     ).extend(cv.COMPONENT_SCHEMA),
@@ -67,7 +73,7 @@ CONFIG_SCHEMA = cv.All(
 )
 
 
-def from_rgbw(config):
+def from_rgbwa(config):
     r = 0
     if CONF_RED in config:
         r = int(config[CONF_RED] * 255)
@@ -92,17 +98,23 @@ def from_rgbw(config):
     elif CONF_WHITE_INT in config:
         w = config[CONF_WHITE_INT]
 
-    return (r, g, b, w)
+	a = 0
+    if CONF_ALFA in config:
+        a = int(config[CONF_ALFA] * 255)
+    elif CONF_ALFA_INT in config:
+        a = config[CONF_ALFA_INT]
+
+	return (r, g, b, w, a)
 
 
 async def to_code(config):
     if CONF_HEX in config:
-        r, g, b = config[CONF_HEX]
+        r, g, b, a = config[CONF_HEX]
         w = 0
     else:
-        r, g, b, w = from_rgbw(config)
+        r, g, b, w, a = from_rgbwa(config)
 
     cg.new_variable(
         config[CONF_ID],
-        cg.ArrayInitializer(r, g, b, w),
+        cg.ArrayInitializer(r, g, b, w, a),
     )
