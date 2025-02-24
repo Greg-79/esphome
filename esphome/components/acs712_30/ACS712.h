@@ -1,5 +1,14 @@
 #pragma once
-// https://github.com/RobTillaart/ACS712
+
+#ifdef USE_ARDUINO
+
+#include "esphome/core/component.h"
+#include "esphome/core/hal.h"
+#include "esphome/components/output/float_output.h"
+
+namespace esphome {
+namespace acs712 {
+
 
 #include "Arduino.h"
 
