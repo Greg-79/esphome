@@ -1,5 +1,4 @@
 #pragma once
-
 #ifdef USE_ARDUINO
 
 #include "esphome/core/component.h"
@@ -140,6 +139,6 @@ class ACS712
 };
 
 
-//  -- END OF FILE --
+#endif  // USE_ARDUINO
 
 
