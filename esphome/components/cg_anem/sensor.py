@@ -41,6 +41,7 @@ UNIT_COUNTS_PER_SQUARED_CENTIMETER = "cm²"
 
 DEPENDENCIES = ["i2c"]
 CODEOWNERS = ["@ananevgv"]
+CODEOWNERS = ["@greg-79"]
 
 cg_anem_ns = cg.esphome_ns.namespace("cg_anem")
 CGAnemComponent = cg_anem_ns.class_(
